@@ -1,10 +1,14 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import Pong from './Pong';
+import { Provider } from 'react-redux';
+import { store } from './store';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Pong />
+    <Provider store={store}>
+      <Pong />
+    </Provider>
   </React.StrictMode>,
   document.getElementById('root')
 );

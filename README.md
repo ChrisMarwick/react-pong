@@ -23,8 +23,7 @@ state = {
 }
 
 Actions
-- MOVE_UP		(player) => set state.[human|ai].movement to UP
-- MOVE_DOWN		(player) => set state.[human|ai].movement to DOWN
+- MOVE		    (player, direction) => set state.[human|ai].movement to direction
 - GAME_TICK		() => <advance movement in ball and players, calculate collision>
 - LOSE			() => remove ball, change score, spawn ball
 - WIN			() => remove ball, change score, spawn ball
