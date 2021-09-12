@@ -4,8 +4,10 @@ import { getGameTickAction, getMoveAction } from './actions';
 import { MovementDirection, Player, State } from './store';
 
 
-const GAME_TICK_INTERVAL = 50;
-const PADDLE_HEIGHT = 60;
+export const GAME_TICK_INTERVAL = 50;
+export const PADDLE_HEIGHT = 60;
+export const CANVAS_WIDTH = 300;
+export const CANVAS_HEIGHT = 300;
 
 const drawRect = (context: CanvasRenderingContext2D, x: number, y: number, sizeX: number, sizeY: number): void => {
   context.fillRect(x, y, sizeX, sizeY);
@@ -50,10 +52,10 @@ export const Pong: React.FC = () => {
     }
   }, [humanPosition, aiPosition, ballPosition]);
   return (
-    <canvas width={300} height={300} style={{
+    <canvas width={CANVAS_WIDTH} height={CANVAS_HEIGHT} style={{
       borderStyle: "solid",
       borderWidth: 1
-    }} ref={ref} />
+    }} ref={ref}/>
   );
 }
 

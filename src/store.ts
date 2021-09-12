@@ -1,5 +1,6 @@
 import { createStore, AnyAction } from 'redux';
 import { GAME_TICK, MOVE } from './actions';
+import { CANVAS_HEIGHT, PADDLE_HEIGHT } from './Pong';
 
 export enum MovementDirection {
     None,
@@ -12,21 +13,53 @@ export enum Player {
     Ai
 }
 
+export interface Coordinate {
+    x: number;
+    y: number;
+}
+
+export interface Velocity {
+    x: number;
+    y: number;
+}
+
+export interface PaddleState {
+    movement: MovementDirection,
+    position: { x: number, y: number },
+    score: number
+}
+
 export interface State {
-    human: {
-        movement: MovementDirection,
-        position: { x: number, y: number },
-        score: number
-    },
-    ai: {
-        movement: MovementDirection,
-        position: { x: number, y: number },
-        score: number
-    },
+    human: PaddleState,
+    ai: PaddleState,
     ball: {
         velocity: { x: number, y: number },
         position: {x: number, y: number}
     }
+}
+
+const generateRandomVelocity = (): Velocity => {
+    const x = Math.ceil(Math.random() * 16) - 8;
+    const yDirection = Math.floor(Math.random() * 2) === 1 ? 1 : -1;
+    return {
+        x,
+        y: (8 - Math.abs(x)) * yDirection
+    };
+}
+
+const isRectCollide = (rectangleX: number, rectangleY: number, rectangleWidth: number, rectangleHeight: number, 
+        otherRectangleX: number, otherRectangleY: number, otherRectangleWidth: number, otherRectangleHeight: number): boolean => {
+    if (rectangleX + rectangleWidth > otherRectangleX && rectangleX + rectangleWidth < otherRectangleX + otherRectangleWidth) { }
+    else if (rectangleX > otherRectangleX && rectangleX < otherRectangleX + otherRectangleWidth) { }
+    else {
+        return false;
+    }
+    if (rectangleY + rectangleHeight > otherRectangleY && rectangleY + rectangleHeight < otherRectangleY + otherRectangleHeight) {}
+    else if (rectangleY > otherRectangleY && rectangleY < otherRectangleY + otherRectangleHeight) { }
+    else {
+        return false;
+    }
+    return true;
 }
 
 const initialState: State = {
@@ -41,8 +74,8 @@ const initialState: State = {
         score: 0
     },
     ball: {
-        velocity: {x:0, y:0},
-        position: {x:0, y:0}
+        velocity: generateRandomVelocity(),
+        position: {x:145, y:145}
     }
 }
 
@@ -87,9 +120,28 @@ const reducer = (state=initialState, action: AnyAction) => {
                 x: newState.ball.position.x + newState.ball.velocity.x,
                 y: newState.ball.position.y + newState.ball.velocity.y
             }
+
+            // Collision detection between ball and paddles
+            if (isRectCollide(newState.ball.position.x, newState.ball.position.y, 10, 10, newState.human.position.x, newState.human.position.y, 20, PADDLE_HEIGHT)) {
+                newState.ball.velocity.x *= -1;
+            }
+
+            if (isRectCollide(newState.ball.position.x, newState.ball.position.y, 10, 10, newState.ai.position.x, newState.ai.position.y, 20, PADDLE_HEIGHT)) {
+                newState.ball.velocity.x *= -1;
+            }
+
+            // Collision detection between ball and walls
+            if (newState.ball.position.y <= 0 || newState.ball.position.y + 10 >= CANVAS_HEIGHT) {
+                newState.ball.velocity.y *= -1;
+            }
+
+            if (newState.ball.position.x <= 0) {
+                // Dispatch action that increases the score, drains the ball and spawns a new ball. But an action from the reducer is an anti-pattern?
+            }
+
+
             return newState;
         }
-        default:
             return state;
     }
 }
